@@ -24,6 +24,7 @@ urlpatterns = [
     path('login', app.views.login, name='login'), # think both lines needed for redirect 
     path('', app.views.login, name='login'),
     path('register', app.views.register, name='register'),
+    path('homepage', app.views.homepage, name='homepage'),
     path('index', app.views.index, name='index'),
     path('view/<str:id>', app.views.view, name='view'),
     path('edit/<str:id>', app.views.edit, name='edit'),
@@ -38,7 +39,6 @@ urlpatterns = [
     path('findCalculators_time_loc', app.views.findCalculators_time_loc, name='findCalculators_time_loc'),
     path('findCalculators_time_type', app.views.findCalculators_time_type, name='findCalculators_time_type'),
     path('findCalculators_loc_type', app.views.findCalculators_loc_type, name='findCalculators_loc_type'),
-    path('findCalculators_all', app.views.findCalculators_all, name='findCalculators_all')
+    path('findCalculators_all', app.views.findCalculators_all, name='findCalculators_all'),
+    path('logout/',  app.views.logout, name = 'logout')
 ]
-
-""""path('add', app.views.add, name='add'),"""
