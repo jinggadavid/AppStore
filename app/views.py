@@ -243,14 +243,12 @@ def addCalculator(request, id):
 # find calculators
 def findCalculators(request):
     result_dict={}
-
     if request.POST:      
         with connection.cursor() as cursor:
             select_statement = "SELECT c.calc_type, c.brand, c.serial_number, c.price, c.calc_condition, l.location_name, s.time_availability, s.first_name, s.last_name, s.email FROM calculators c, students s, locations l WHERE c.availability='available' AND c.email = s.email AND l.location_id=s.location_id AND ((CAST(%s as INTEGER)-s.time_availability) BETWEEN 0 AND 59) AND l.location_name = %s AND c.calc_type=%s"
             user_input = [request.POST['s.time_availability'], request.POST['l.location_name'], request.POST['c.calc_type']]
             cursor.execute(select_statement,user_input)
             available_calculators = cursor.fetchall()    
-
         result_dict = {'Results':available_calculators}
         return render(request, 'app/findCalculators.html', result_dict)
     return render(request,'app/findCalculators.html', result_dict)
@@ -266,7 +264,6 @@ def findCalculators_time(request):
         result_dict = {'Results':available_calculators}
         return render(request, 'app/findCalculators_time.html', result_dict)
     return render(request,'app/findCalculators_time.html', result_dict)
-
 
 def findCalculators_location(request):
     result_dict={}
@@ -337,21 +334,8 @@ def findCalculators_all(request):
     result_dict = {'Results':available_calculators}
     return render(request, 'app/findCalculators_all.html', result_dict)
 
-def borrow(request, id):
-    """Shows the main page"""
-
-    # dictionary for initial data with
-    # field names as keys
-    context ={}
-
-    # fetch the object related to passed id
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM students WHERE email = %s", [id])
-        obj = cursor.fetchone()
-
-    status = ''
-    # save the data from the form
-    
+def borrow(request):
+    """Shows the main page"""    
     if request.POST:
         with connection.cursor() as cursor:
             # generate loan id
@@ -368,17 +352,13 @@ def borrow(request, id):
             
             cursor.execute("INSERT INTO loan VALUES (loan_id, %s, %s, %s, borrower_email, location_id, location_id, %s, %s)"
                         ,[request.POST['loan_time'] , request.POST['return_time'], request.POST['loaner_email'],
-                          request.POST['brand'] , request.POST['serial_number'], id])
+                          request.POST['brand'] , request.POST['serial_number']])
             
             cursor.execute("UPDATE students SET number_of_transaction += 1 WHERE email = %s"
-                    , [request.POST['loaner_email'], id ])
+                    , [request.POST['loaner_email']])
             
             cursor.execute("UPDATE calculators SET availability = 'not available' WHERE brand = %s AND serial_number = %s AND email = %s"
-                    , [request.POST['brand'] , request.POST['serial_number'], request.POST['loaner_email'], id ])
-            
-            status = 'Borrowed successfully! Contact your loaner through their email if you have further queries.'
-
-    context["status"] = status
+                    , [request.POST['brand'] , request.POST['serial_number'], request.POST['loaner_email']])
  
     return render(request, "app/homepage.html", context)
 
